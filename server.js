@@ -5,11 +5,16 @@ const db = require('./config/db');
 
 const app = express();
 
+app.use(express.json());
+
 app.get('/', (req, res) => {
     return res.send("Welcome to Chit-Chat Server!!");
 });
 
 app.use('/auth', authRoute);
+
+// Handle invalid URLs
+app.use('', (req, res) => res.json({ message: 'Invalid URL' }));
 
 app.listen(7000, (err) => {
     if (err) {

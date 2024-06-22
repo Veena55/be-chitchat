@@ -14,5 +14,7 @@ router.get('/', specificLimiter, authenticate, authController.verifyUser);
 
 router.post('/verify_google_token', specificLimiter, authController.continueWithGoogle);
 
+router.post('/signup', authController.signup);
+
 
 module.exports = router;
