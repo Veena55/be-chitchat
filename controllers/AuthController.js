@@ -31,9 +31,16 @@ const verifyGoogleToken = async (req, res) => {
     }
 }
 
+const signup = async (req, res) => {
+    const { name, email, username, password } = req.body
+    // console.log(req.body)
+    return res.status(201).json({ name, email, username, password });
+}
+
 
 
 module.exports = {
     verifyUser,
-    verifyGoogleToken
+    verifyGoogleToken,
+    signup,
 }
