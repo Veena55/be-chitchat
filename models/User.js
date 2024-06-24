@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const uniqueValidator = require('mongoose-unique-validator');
+// const uniqueValidator = require('mongoose-unique-validator'); // can be used to validate unique fields
 
 
 const userSchema = new mongoose.Schema({
@@ -52,6 +52,23 @@ userSchema.methods.toJSON = function () {
     const user = this.toObject();
     delete user.password;
     return user;
+};
+
+userSchema.methods.comparePassword = function (password) {
+    if (!password) {
+        const error = new Error();
+        error.status = 404;
+        error.message = "Password field is empty";
+        throw error;
+    }
+    // If password is not set then a new password is required to be set for this user
+    if (!this.password) {
+        const error = new Error();
+        error.status = 400;
+        error.message = "Password not set";
+        throw error;
+    }
+    return bcrypt.compare(password, this.password);
 };
 
 const user = mongoose.model('user', userSchema);
