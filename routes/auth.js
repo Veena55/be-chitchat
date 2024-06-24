@@ -20,8 +20,8 @@ router.get('/', specificLimiter, authenticate, authController.verifyUser);
 
 router.post('/verify_google_token', specificLimiter, authController.continueWithGoogle);
 
-router.post('/signup', controllers.signup);
-router.post('/signin', controllers.signin);
+router.post('/signup', specificLimiter, controllers.signup);
+router.post('/signin', specificLimiter, controllers.signin);
 
 
 module.exports = router;
