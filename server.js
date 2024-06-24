@@ -25,7 +25,7 @@ app.use('', (req, res, next) => {
 app.use((error, req, res, next) => {
     console.error("Something went wrong!!!", `Error status: ${error.status}`);
     console.log(error);
-    if (error.status && -1 < error.status < 600)
+    if (error.status && 99 < error.status < 600)
         return res.status(error.status).json({ ...error });
     return res.status(400).json({ c_msg: 'Something went Wrong', ...error });
 });
