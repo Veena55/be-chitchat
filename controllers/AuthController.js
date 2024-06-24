@@ -2,6 +2,7 @@ const { OAuth2Client } = require('google-auth-library');
 const jwtController = require('../controllers/JwtTokenController');
 const { verifyGoogleToken } = require('../middlewares/auth');
 const { isTokenPresent } = require('../utils/token');
+const User = require('../models/User');
 require('dotenv').config();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -29,10 +30,14 @@ const continueWithGoogle = async (req, res) => {
     }
 }
 
-const signup = async (req, res) => {
-    const { name, email, username, password } = req.body
-    // console.log(req.body)
-    return res.status(201).json({ name, email, username, password });
+const signup = async (req, res, next) => {
+    const { name, email, password } = req.body;
+    try {
+        const user = await User.create({ name, email, password });
+        return res.status(201).json(user);
+    } catch (error) {
+        next(error);
+    }
 }
 
 
