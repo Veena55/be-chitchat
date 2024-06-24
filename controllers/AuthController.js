@@ -4,6 +4,7 @@ const { verifyGoogleToken } = require('../middlewares/auth');
 const { isTokenPresent } = require('../utils/token');
 const User = require('../models/User');
 require('dotenv').config();
+const { body, validationResult } = require('express-validator');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -31,12 +32,64 @@ const continueWithGoogle = async (req, res) => {
 }
 
 const signup = async (req, res) => {
+    // Validation rules & sanitization of the input fields
+    await body('name')
+        .isString()
+        .withMessage("Name filed should be a string.")
+        .notEmpty()
+        .withMessage("Name filed is required.")
+        .trim()
+        .escape()
+        .run(req);
+    await body('email')
+        .notEmpty()
+        .withMessage("Email filed is required.")
+        .isEmail()
+        .withMessage("Invalid Email")
+        .normalizeEmail()
+        .run(req);
+    await body('password')
+        .notEmpty()
+        .withMessage("Password filed is required.")
+        .isLength({ min: 5 })
+        .withMessage("Password filed should be a minimum of 5 characters.")
+        .trim()
+        .escape()
+        .run(req);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const { name, email, password } = req.body;
     const user = await User.create({ name, email, password });
     return res.status(201).json(user);
 }
 
 const signin = async (req, res) => {
+    // Validation rules & sanitization of the input fields
+    await body('email')
+        .notEmpty()
+        .withMessage("Email filed is required.")
+        .isEmail()
+        .withMessage("Invalid Email")
+        .normalizeEmail()
+        .run(req);
+    await body('password')
+        .notEmpty()
+        .withMessage("Password filed is required.")
+        .isLength({ min: 5 })
+        .withMessage("Password filed should be a minimum of 5 characters.")
+        .trim()
+        .escape()
+        .run(req);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
