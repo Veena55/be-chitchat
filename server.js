@@ -30,7 +30,21 @@ const transporter = nodemailer.createTransport({
 
 
 // Handle invalid URLs
-app.use('', (req, res) => res.json({ message: 'Invalid URL' }));
+app.use('', (req, res, next) => {
+    const error = new Error();
+    error.status = 404
+    error.message = "Not Found";
+    next(error);
+});
+
+// A middleware to handle errors for application level.
+app.use((error, req, res, next) => {
+    console.error("Something went wrong!!!", `Error status: ${error.status}`);
+    console.log(error);
+    if (error.status && 99 < error.status < 600)
+        return res.status(error.status).json({ ...error });
+    return res.status(400).json({ c_msg: 'Something went Wrong', ...error });
+});
 
 app.listen(7000, (err) => {
     if (err) {
