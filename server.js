@@ -1,11 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const authRoute = require('./routes/auth');
 require('./config/db');
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow your frontend's origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+}));
 
 app.get('/', (req, res) => {
     return res.send("Welcome to Chit-Chat Server!!");
@@ -23,11 +30,10 @@ app.use('', (req, res, next) => {
 
 // A middleware to handle errors for application level.
 app.use((error, req, res, next) => {
-    console.error("Something went wrong!!!", `Error status: ${error.status}`);
-    console.log(error);
+    error.c_msg = 'Something went Wrong';
     if (error.status && 99 < error.status < 600)
         return res.status(error.status).json({ ...error });
-    return res.status(400).json({ c_msg: 'Something went Wrong', ...error });
+    return res.status(400).json({ ...error });
 });
 
 app.listen(7000, (err) => {

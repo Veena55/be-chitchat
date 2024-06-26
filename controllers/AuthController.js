@@ -9,7 +9,6 @@ const { body, validationResult } = require('express-validator');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const verifyUser = (req, res, next) => {
-    console.log("Hi");
     return res.send("Verified");
 }
 const continueWithGoogle = async (req, res) => {
