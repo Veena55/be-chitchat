@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
-const nodemailer = require('nodemailer');
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 require('./config/db');
