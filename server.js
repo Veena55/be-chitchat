@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
+const nodemailer = require('nodemailer');
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 require('./config/db');
@@ -29,7 +30,22 @@ app.get('/', (req, res) => {
     return res.send("Welcome to Chit-Chat Server!!");
 });
 
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
+}));
+
 app.use('/auth', authRoute);
+
+// Create transporter object using SMTP transport
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    // auth:{
+    //     user: 
+    // }
+})
+
 
 // Handle invalid URLs
 app.use('', (req, res, next) => {
