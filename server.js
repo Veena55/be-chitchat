@@ -37,15 +37,6 @@ app.use(cors({
 
 app.use('/auth', authRoute);
 
-// Create transporter object using SMTP transport
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    // auth:{
-    //     user: 
-    // }
-})
-
-
 // Handle invalid URLs
 app.use('', (req, res, next) => {
     const error = new Error();
