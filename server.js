@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 require('./config/db');
@@ -7,6 +9,15 @@ require('./config/db');
 const app = express();
 
 app.use(express.json());
+
+// app.use(cookieParser());
+
+app.use(session({
+    secret: 'chit-chat-key',
+    resave: true,
+    saveUninitialized: true,
+    // cookie: { secure: false }
+}))
 
 app.use(cors({
     origin: 'http://localhost:5173', // Allow your frontend's origin
@@ -30,6 +41,7 @@ app.use('', (req, res, next) => {
 
 // A middleware to handle errors for application level.
 app.use((error, req, res, next) => {
+    console.log(error);
     error.c_msg = 'Something went Wrong';
     if (error.status && 99 < error.status < 600)
         return res.status(error.status).json({ ...error });
