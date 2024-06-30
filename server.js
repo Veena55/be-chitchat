@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const authRoute = require('./routes/auth');
 require('./config/db');
+require('dotenv').config();
 
 const app = express();
 
@@ -13,7 +14,7 @@ app.use(express.json());
 // app.use(cookieParser());
 
 app.use(session({
-    secret: 'chit-chat-key',
+    secret: process.env.APPNAME,
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: false }
