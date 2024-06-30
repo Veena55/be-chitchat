@@ -39,7 +39,7 @@ userSchema.pre('save', async function (next) {
     if (existingUser) {
         const error = new Error();
         error.status = 409;
-        error.message = 'Email already exists, please try another one.';
+        error.message = { msg: "user already exists", is_email_verified: existingUser.is_email_verified };
         return next(error);
     }
     if (this.isModified('password')) {
