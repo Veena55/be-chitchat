@@ -3,13 +3,13 @@ const jwtController = require('../controllers/JwtTokenController');
 const { verifyGoogleToken } = require('../middlewares/auth');
 const { isTokenPresent } = require('../utils/token');
 const User = require('../models/User');
+const sendMail = require('../utils/mailer');
 require('dotenv').config();
 const { body, validationResult } = require('express-validator');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const verifyUser = (req, res, next) => {
-    console.log("Hi");
     return res.send("Verified");
 }
 const continueWithGoogle = async (req, res) => {
@@ -48,8 +48,7 @@ const signup = async (req, res) => {
         .withMessage("Invalid Email")
         .normalizeEmail()
         .run(req);
-    await body('password')
-        .notEmpty()
+    await body('password').notEmpty()
         .withMessage("Password filed is required.")
         .isLength({ min: 5 })
         .withMessage("Password filed should be a minimum of 5 characters.")
@@ -63,8 +62,12 @@ const signup = async (req, res) => {
     }
 
     const { name, email, password } = req.body;
+    // let responseMail = await sendMail(email);
+    // if (responseMail.verfify_otp != null) {
+
+    // }
     const user = await User.create({ name, email, password });
-    return res.status(201).json(user);
+    return res.status(201).json({ "is_email_verified": user.is_email_verified });
 }
 
 const signin = async (req, res) => {
@@ -72,15 +75,15 @@ const signin = async (req, res) => {
     await body('email')
         .notEmpty()
         .withMessage("Email filed is required.")
-        .isEmail()
-        .withMessage("Invalid Email")
+        // .isEmail()
+        // .withMessage("Invalid Email")
         .normalizeEmail()
         .run(req);
     await body('password')
         .notEmpty()
         .withMessage("Password filed is required.")
-        .isLength({ min: 5 })
-        .withMessage("Password filed should be a minimum of 5 characters.")
+        // .isLength({ min: 5 })
+        // .withMessage("Password filed should be a minimum of 5 characters.")
         .trim()
         .escape()
         .run(req);
@@ -97,6 +100,9 @@ const signin = async (req, res) => {
     }
     if (!(await user.comparePassword(password))) {
         return res.status(401).json({ "msg": "Invalid Password" });
+    }
+    if (!user.is_email_verified) {
+        return res.status(401).json({ "msg": "Email not verified" });
     }
     const jwtToken = jwtController.generateJwtToken(user.toJSON(), process.env.JWT_SECRET_KEY);
     return res.json({ token: jwtToken });
