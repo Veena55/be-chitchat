@@ -75,15 +75,15 @@ const signin = async (req, res) => {
     await body('email')
         .notEmpty()
         .withMessage("Email filed is required.")
-        .isEmail()
-        .withMessage("Invalid Email")
+        // .isEmail()
+        // .withMessage("Invalid Email")
         .normalizeEmail()
         .run(req);
     await body('password')
         .notEmpty()
         .withMessage("Password filed is required.")
-        .isLength({ min: 5 })
-        .withMessage("Password filed should be a minimum of 5 characters.")
+        // .isLength({ min: 5 })
+        // .withMessage("Password filed should be a minimum of 5 characters.")
         .trim()
         .escape()
         .run(req);
@@ -100,6 +100,9 @@ const signin = async (req, res) => {
     }
     if (!(await user.comparePassword(password))) {
         return res.status(401).json({ "msg": "Invalid Password" });
+    }
+    if (!user.is_email_verified) {
+        return res.status(401).json({ "msg": "Email not verified" });
     }
     const jwtToken = jwtController.generateJwtToken(user.toJSON(), process.env.JWT_SECRET_KEY);
     return res.json({ token: jwtToken });
