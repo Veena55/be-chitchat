@@ -5,12 +5,12 @@ const getFriendsById = async (req, res) => {
     try {
         const friendList = await Friend.find({
             $or: [
-                { user: req.user },
-                { friend: req.user }
+                { user: req.user.id },
+                { friend: req.user.id }
             ]
         });
         if (!friendList || friendList.length === 0) {
-            return res.status(404).send("No friends found");
+            return res.status(404).json("No friends found");
         }
 
         return res.status(200).json(friendList);
@@ -22,18 +22,18 @@ const getFriendsById = async (req, res) => {
 const addFreind = async (req, res) => {
     try {
         const friend = await Friend.findOne({
-            $and: [
+            $or: [
                 {
-                    $or: [
+                    $and: [
                         { user: req.body.user },
-                        { friend: req.body.user }
+                        { friend: req.user }
                     ]
                 },
                 {
 
-                    $or: [
+                    $and: [
                         { user: req.user },
-                        { friend: req.user }
+                        { friend: req.body.user }
                     ]
                 }
             ]
@@ -55,5 +55,16 @@ const addFreind = async (req, res) => {
     }
 }
 
+const acceptInvite = async (req, res) => {
+    try {
+        const response = await Friend.updateOne({ _id: id }, { $set: { accepted: true } });
+        if (response.nModified === 1) {
+            res.status(200).json("Accepted");
+        }
 
-module.exports = { getFriendsById, addFreind };
+    } catch (error) {
+        return res.status(500).json("Internal Error");
+    }
+}
+
+module.exports = { getFriendsById, addFreind, acceptInvite };
