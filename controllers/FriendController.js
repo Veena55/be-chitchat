@@ -38,6 +38,18 @@ const addFreind = async (req, res) => {
                 }
             ]
         });
+        if (friend) {
+            res.status(403).json("Already, exists in freind list!!");
+        } else {
+            const newFriend = new Friend(
+                {
+                    user: req.user,
+                    friend: req.body.user
+                }
+            );
+            await newFriend.save();
+            res.status(200).json("Added into friend list");
+        }
     } catch (error) {
         return res.status(500).json("Internal Error");
     }
