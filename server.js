@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
-const authRoute = require('./routes/auth');
+const { authenticate } = require('./middlewares/auth');
 require('./config/db');
 require('dotenv').config();
+const router = require('./routes/index');
 
 const app = express();
 
@@ -26,17 +27,7 @@ app.use(cors({
     credentials: true,
 }));
 
-app.get('/', (req, res) => {
-    return res.send("Welcome to Chit-Chat Server!!");
-});
-
-app.use(cors({
-    origin: "http://localhost:5173",
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-}));
-
-app.use('/auth', authRoute);
+app.use('/', authenticate, router);
 
 // Handle invalid URLs
 app.use('', (req, res, next) => {
