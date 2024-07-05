@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    friends: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+    }]
 }, {
     timestamps: {
         createdAt: 'created_at',

@@ -4,6 +4,8 @@ const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const authRoute = require('./routes/auth');
+const friendRoute = require('./routes/friend');
+const inviteRoute = require('./routes/invite');
 require('./config/db');
 require('dotenv').config();
 
@@ -37,6 +39,8 @@ app.use(cors({
 }));
 
 app.use('/auth', authRoute);
+app.use('/friend', friendRoute);
+app.use('/invite', inviteRoute);
 
 // Handle invalid URLs
 app.use('', (req, res, next) => {
