@@ -2,24 +2,24 @@
 const Friend = require("../models/Friend");
 
 const getFriendsById = async (req, res) => {
+    console.log("HI", req.user._id);
     try {
         const friendList = await Friend.find({
             $or: [
-                { user: req.user.id },
-                { friend: req.user.id }
+                { user: req.user._id },
+                { friend: req.user._id }
             ]
-        });
+        }).populate('user', 'name email');
         if (!friendList || friendList.length === 0) {
             return res.status(404).json("No friends found");
         }
-
         return res.status(200).json(friendList);
     } catch (error) {
-        return res.status(500).json("Inernal Error");
+        return res.status(500).json("Internal Error");
     }
 }
 
-const addFreind = async (req, res) => {
+const addFreind = async (req, res, next) => {
     try {
         const friend = await Friend.findOne({
             $or: [
@@ -39,7 +39,7 @@ const addFreind = async (req, res) => {
             ]
         });
         if (friend) {
-            res.status(403).json("Already, exists in freind list!!");
+            res.status(403).json({ msg: "FRIEND_EXISTS" });
         } else {
             const newFriend = new Friend(
                 {
@@ -51,7 +51,9 @@ const addFreind = async (req, res) => {
             res.status(200).json("Added into friend list");
         }
     } catch (error) {
-        return res.status(500).json("Internal Error");
+        console.log(error);
+        next(error);
+        // return res.status(500).json("Internal Error");
     }
 }
 
