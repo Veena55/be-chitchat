@@ -33,7 +33,7 @@ app.use('/', authenticate, router);
 app.use('', (req, res, next) => {
     const error = new Error();
     error.status = 404
-    error.message = "Not Found";
+    error.message = "INVALID_URL";
     next(error);
 });
 

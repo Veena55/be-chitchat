@@ -13,8 +13,8 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', authRouter);
-app.use('/friend', friendRoute);
-app.use('/invite', inviteRoute);
-app.use('/search', searchRoute);
+router.use('/friend', friendRoute);
+router.use('/invite', inviteRoute);
+router.use('/search', searchRoute);
 
 module.exports = router

@@ -68,7 +68,7 @@ const signup = async (req, res) => {
     // }
     console.log(req.query);
     const user = new User({ ...req.body });
-    user.referral = req.query.referral;
+    user.referral = req.query.ref;
     await user.save()
     return res.status(201).json({ "is_email_verified": user.is_email_verified });
 }

@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
 // userSchema.plugin(uniqueValidator);
 
 userSchema.pre('save', async function (next) {
-    const existingUser = await user.findOne({ email: this.email });
+    const existingUser = await User.findOne({ email: this.email });
     if (existingUser) {
         const error = new Error();
         error.status = 409;
@@ -54,7 +54,7 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.post('save', async function (doc, next) {
-    console.log(doc, this);
+    // console.log(doc, this);
     const referral = this.referral;
     if (referral)
         await Friend.create({
@@ -62,18 +62,6 @@ userSchema.post('save', async function (doc, next) {
             friend: doc._id,
             accepted: true,
         });
-    // save the referral as user's friend.
-
-    // const existingUser = await user.findOne({ email: this.email });
-    // if (existingUser) {
-    //     const error = new Error();
-    //     error.status = 409;
-    //     error.message = { msg: "user already exists", is_email_verified: existingUser.is_email_verified };
-    //     return next(error);
-    // }
-    // if (this.isModified('password')) {
-    //     this.password = await bcrypt.hash(this.password, 5);
-    // }
     next();
 });
 
