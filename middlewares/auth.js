@@ -33,7 +33,7 @@ const authenticate = async (req, res, next) => {
             req.user = payload;
             next();
         } else {
-            const jwtToken = jwtController.verifyJwtToken(decodeToken);
+            const jwtToken = await jwtController.verifyJwtToken(token);
             if (jwtToken) {
                 req.user = jwtToken;
                 next();
