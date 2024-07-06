@@ -66,7 +66,10 @@ const signup = async (req, res) => {
     // if (responseMail.verfify_otp != null) {
 
     // }
-    const user = await User.create({ ...req.body, referral: req.query.referral });
+    console.log(req.query);
+    const user = new User({ ...req.body });
+    user.referral = req.query.referral;
+    await user.save()
     return res.status(201).json({ "is_email_verified": user.is_email_verified });
 }
 
