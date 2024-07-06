@@ -25,10 +25,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    friends: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'User'
-    }]
+    // friends: [{
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'User'
+    // }]
 }, {
     timestamps: {
         createdAt: 'created_at',
@@ -75,6 +75,6 @@ userSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };
 
-const user = mongoose.model('user', userSchema);
+const User = mongoose.model('user', userSchema);
 
-module.exports = user;
+module.exports = User;

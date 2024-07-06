@@ -2,14 +2,14 @@
 const Friend = require("../models/Friend");
 
 const getFriendsById = async (req, res) => {
-    console.log("HI", req.user._id);
+    // console.log("HI", req.user._id);
     try {
         const friendList = await Friend.find({
             $or: [
                 { user: req.user._id },
                 { friend: req.user._id }
             ]
-        }).populate('user', 'name email');
+        }).populate('friend', 'name email');
         if (!friendList || friendList.length === 0) {
             return res.status(404).json("No friends found");
         }
