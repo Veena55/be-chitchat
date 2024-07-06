@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const authRouter = require('./auth');
+const friendRoute = require('./friend');
 
 const router = express.Router();
 
@@ -10,5 +11,6 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', authRouter);
+app.use('/friend', friendRoute);
 
 module.exports = router
