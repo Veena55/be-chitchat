@@ -16,17 +16,19 @@ const specificLimiter = rateLimit({
 const controllers = {
     signup: withErrorHandling(authController.signup),
     signin: withErrorHandling(authController.signin),
+    sendMail: withErrorHandling(utility.sendMail),
+    verifyOTP: withErrorHandling(utility.verifyOTP),
 }
 
 authRouter.get('/', specificLimiter, authenticate, authController.verifyUser);
 
 authRouter.post('/verify_google_token', specificLimiter, authController.continueWithGoogle);
 
-authRouter.route('/signup', { name: 'auth.signup' }).post(specificLimiter, controllers.signup);
-authRouter.route('/signin', { name: 'auth.signin' }).post(specificLimiter, controllers.signin);
+authRouter.post('/signup', specificLimiter, controllers.signup);
+authRouter.post('/signin', specificLimiter, controllers.signin);
 
-authRouter.post('/send-mail', utility.sendMail);
-authRouter.post('/verify-otp', utility.verifyOTP);
+authRouter.post('/send-mail', controllers.sendMail);
+authRouter.post('/verify-otp', controllers.verifyOTP);
 
 
 
