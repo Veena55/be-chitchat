@@ -2,7 +2,6 @@
 const Friend = require("../models/Friend");
 
 const getFriendsById = async (req, res) => {
-    // console.log("HI", req.user._id);
     try {
         const friendList = await Friend.find({
             $or: [
