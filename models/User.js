@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Friend = require('./Friend');
 // const uniqueValidator = require('mongoose-unique-validator'); // can be used to validate unique fields
 
 
@@ -39,7 +40,7 @@ const userSchema = new mongoose.Schema({
 // userSchema.plugin(uniqueValidator);
 
 userSchema.pre('save', async function (next) {
-    const existingUser = await user.findOne({ email: this.email });
+    const existingUser = await User.findOne({ email: this.email });
     if (existingUser) {
         const error = new Error();
         error.status = 409;
@@ -49,6 +50,18 @@ userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
         this.password = await bcrypt.hash(this.password, 5);
     }
+    next();
+});
+
+userSchema.post('save', async function (doc, next) {
+    // console.log(doc, this);
+    const referral = this.referral;
+    if (referral)
+        await Friend.create({
+            user: referral,
+            friend: doc._id,
+            accepted: true,
+        });
     next();
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const router = express.Router();
+const authRouter = express.Router();
 const authController = require('../controllers/AuthController');
 const { authenticate } = require('../middlewares/auth');
 const withErrorHandling = require('../middlewares/error');
@@ -16,18 +16,20 @@ const specificLimiter = rateLimit({
 const controllers = {
     signup: withErrorHandling(authController.signup),
     signin: withErrorHandling(authController.signin),
+    sendMail: withErrorHandling(utility.sendMail),
+    verifyOTP: withErrorHandling(utility.verifyOTP),
 }
 
-router.get('/', specificLimiter, authenticate, authController.verifyUser);
+authRouter.get('/', specificLimiter, authenticate, authController.verifyUser);
 
-router.post('/verify_google_token', specificLimiter, authController.continueWithGoogle);
+authRouter.post('/verify_google_token', specificLimiter, authController.continueWithGoogle);
 
-router.post('/signup', specificLimiter, controllers.signup);
-router.post('/signin', specificLimiter, controllers.signin);
+authRouter.post('/signup', specificLimiter, controllers.signup);
+authRouter.post('/signin', specificLimiter, controllers.signin);
 
-router.post('/send-mail', utility.sendMail);
-router.post('/verify-otp', utility.verifyOTP);
+authRouter.post('/send-mail', controllers.sendMail);
+authRouter.post('/verify-otp', controllers.verifyOTP);
 
 
 
-module.exports = router;
+module.exports = authRouter;

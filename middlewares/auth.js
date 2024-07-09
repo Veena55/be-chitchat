@@ -16,6 +16,14 @@ const verifyGoogleToken = async (req, res, token) => {
 
 
 const authenticate = async (req, res, next) => {
+    // console.log(req, 'writing route', req.url);
+    const skipURLs = ['auth', 'temp']
+    if (
+        req.url === '/' // index page
+        ||
+        skipURLs.some(url => req.url.includes(url))
+    )
+        return next();
     const token = isTokenPresent(req, res);
     if (token) {
         const decodeToken = jwtController.decodeJwtToken(token);
