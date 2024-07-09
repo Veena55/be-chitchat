@@ -1,22 +1,23 @@
 
 const Friend = require("../models/Friend");
 
-const getFriendsById = async (req, res) => {
-    console.log("HI", req.user._id);
-    try {
-        const friendList = await Friend.find({
-            $or: [
-                { user: req.user._id },
-                { friend: req.user._id }
-            ]
-        }).populate('user', 'name email');
-        if (!friendList || friendList.length === 0) {
-            return res.status(404).json("No friends found");
-        }
-        return res.status(200).json(friendList);
-    } catch (error) {
-        return res.status(500).json("Internal Error");
-    }
+// const getFriendsById = async (req, res) => {
+const all = async (req, res) => {
+    const friendList = await Friend.find({
+        $or: [
+            { user: req.user._id },
+            { friend: req.user._id }
+        ]
+    }).populate('friend', 'name email');
+    return res.status(200).json(friendList);
+    // console.log("HI", req.user._id);
+    // try {
+    // if (!friendList || friendList.length === 0) {
+    //     return res.status(404).json("No friends found");
+    // }
+    // } catch (error) {
+    //     return res.status(500).json("Internal Error");
+    // }
 }
 
 const addFreind = async (req, res, next) => {
@@ -69,4 +70,4 @@ const acceptInvite = async (req, res) => {
     }
 }
 
-module.exports = { getFriendsById, addFreind, acceptInvite };
+module.exports = { all, addFreind, acceptInvite };

@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 const cors = require('cors');
-const authRoute = require('./routes/auth');
-const friendRoute = require('./routes/friend');
-const inviteRoute = require('./routes/invite');
+const { authenticate } = require('./middlewares/auth');
 require('./config/db');
 require('dotenv').config();
+const router = require('./routes/index');
 
 const app = express();
 
@@ -28,25 +27,13 @@ app.use(cors({
     credentials: true,
 }));
 
-app.get('/', (req, res) => {
-    return res.send("Welcome to Chit-Chat Server!!");
-});
-
-app.use(cors({
-    origin: "http://localhost:5173",
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-}));
-
-app.use('/auth', authRoute);
-app.use('/friend', friendRoute);
-app.use('/invite', inviteRoute);
+app.use('/', authenticate, router);
 
 // Handle invalid URLs
 app.use('', (req, res, next) => {
     const error = new Error();
     error.status = 404
-    error.message = "Not Found";
+    error.message = "INVALID_URL";
     next(error);
 });
 
