@@ -6,9 +6,18 @@ const cors = require('cors');
 const { authenticate } = require('./middlewares/auth');
 require('./config/db');
 require('dotenv').config();
+const socketIo = require('socket.io');
 const router = require('./routes/index');
+const http = require('http');
 
+// Create an Express application
 const app = express();
+
+// Create an HTTP server and pass the Express app to it
+const server = http.createServer(app);
+
+// Attach Socket.io to the HTTP server
+const io = socketIo(server);
 
 app.use(express.json());
 
@@ -46,7 +55,15 @@ app.use((error, req, res, next) => {
     return res.status(400).json({ ...error });
 });
 
-app.listen(7000, (err) => {
+io.on('connection', (socket) => {
+    console.log('New client connected');
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    })
+})
+
+server.listen(7000, (err) => {
     if (err) {
         console.log("Can't listen to the port!!");
     }
