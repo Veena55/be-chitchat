@@ -17,7 +17,13 @@ const app = express();
 const server = http.createServer(app);
 
 // Attach Socket.io to the HTTP server
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: 'http://localhost:5173', // Allow your frontend's origin
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
 
 app.use(express.json());
 
@@ -58,10 +64,17 @@ app.use((error, req, res, next) => {
 io.on('connection', (socket) => {
     console.log('New client connected');
 
+
+    socket.on('sendMessage', ({ sender, receiver, message }) => {
+        console.log({ sender, receiver, message });
+        // const room = [sender, receiver].sort().join("_");
+        io.emit('receiveMessage', { sender, receiver, message });
+    });
+
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     })
-})
+});
 
 server.listen(7000, (err) => {
     if (err) {

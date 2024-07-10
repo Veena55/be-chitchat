@@ -9,15 +9,15 @@ const all = async (req, res) => {
             { friend: req.user._id }
         ]
     }).populate('friend', 'name email');
-    return res.status(200).json(friendList);
-    // console.log("HI", req.user._id);
-    // try {
-    // if (!friendList || friendList.length === 0) {
-    //     return res.status(404).json("No friends found");
-    // }
-    // } catch (error) {
-    //     return res.status(500).json("Internal Error");
-    // }
+    const populatedFriendList = friendList.map(friend => {
+        const isUser = friend.user._id.toString() === req.user._id.toString();
+        return {
+            ...friend._doc,
+            friend: isUser ? friend.friend : friend.user
+        };
+    });
+    // console.log(populatedFriendList);
+    return res.status(200).json(populatedFriendList);
 }
 
 const addFreind = async (req, res, next) => {
