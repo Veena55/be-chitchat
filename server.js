@@ -9,6 +9,7 @@ require('dotenv').config();
 const socketIo = require('socket.io');
 const router = require('./routes/index');
 const http = require('http');
+const { verifyJwtToken } = require('./controllers/JwtTokenController');
 
 // Create an Express application
 const app = express();
@@ -61,14 +62,23 @@ app.use((error, req, res, next) => {
     return res.status(400).json({ ...error });
 });
 
+io.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+    if (token) {
+        const user = verifyJwtToken(token);
+        socket.id = user._id;
+        console.log(socket.id, "manual");
+    }
+    next();
+})
+
 io.on('connection', (socket) => {
-    console.log('New client connected');
+    console.log('New client connected', socket.id);
 
 
-    socket.on('sendMessage', ({ sender, receiver, message }) => {
-        console.log({ sender, receiver, message });
-        // const room = [sender, receiver].sort().join("_");
-        io.emit('receiveMessage', { sender, receiver, message });
+    socket.on('sendMessage', ({ to, message }) => {
+        console.log("send", { sender: socket.id, to, message });
+        io.to(to).emit('receiveMessage', { sender: socket.id, message });
     });
 
     socket.on('disconnect', () => {

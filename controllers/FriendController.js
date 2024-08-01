@@ -3,21 +3,22 @@ const Friend = require("../models/Friend");
 
 // const getFriendsById = async (req, res) => {
 const all = async (req, res) => {
-    const friendList = await Friend.find({
-        $or: [
-            { user: req.user._id },
-            { friend: req.user._id }
-        ]
-    }).populate('friend', 'name email');
-    const populatedFriendList = friendList.map(friend => {
-        const isUser = friend.user._id.toString() === req.user._id.toString();
-        return {
-            ...friend._doc,
-            friend: isUser ? friend.friend : friend.user
-        };
-    });
-    // console.log(populatedFriendList);
-    return res.status(200).json(populatedFriendList);
+    const friendData = await Friend.find({ user: req.user._id })
+        .populate('friend', 'name email')
+        .select('-user');
+    const userData = await Friend.find({ friend: req.user._id })
+        .populate('user', 'name email')
+        .select('-friend');
+
+    const transformedFriendList = friendData.map(item => ({
+        _id: item._id,
+        user: item.friend,  // Renaming 'friend' to 'contact'
+        accepted: item.accepted,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+    }));
+
+    return res.status(200).json([...transformedFriendList, ...userData]);
 }
 
 const addFreind = async (req, res, next) => {
